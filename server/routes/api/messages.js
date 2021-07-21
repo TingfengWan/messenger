@@ -19,7 +19,7 @@ router.post("/", async (req, res, next) => {
         res.sendStatus(403);
       }
 
-      const message = await Message.create({ senderId, text, conversationId });
+      const message = await Message.create({ senderId, text, conversationId, recipientRead: false });
       return res.json({ message, sender });
     }
     // if we don't have conversation id, find a conversation to make sure it doesn't already exist
@@ -42,11 +42,29 @@ router.post("/", async (req, res, next) => {
       senderId,
       text,
       conversationId: conversation.id,
+      recipientRead: false,
     });
     res.json({ message, sender });
   } catch (error) {
     next(error);
   }
 });
+router.patch('/read', async (req, res) => {
+  const messages = req.body;
 
+  if ((Object.keys(messages).length > 0) && (messages.length > 0)) {
+    await messages.map(async message => {
+      const updatedMessage = {
+        id: message.id,
+        recipientRead: true,
+      }
+
+      await Message.update(updatedMessage, {
+        where: {
+          id: message.id
+        }
+      })
+    })
+  }
+});
 module.exports = router;
