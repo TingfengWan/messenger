@@ -56,9 +56,7 @@ io.on("connection", (socket) => {
   });
   socket.on("read-messages", data => {
     const { messages } = data;
-    console.log(messages);
     messages.forEach((element) => {
-      console.log(element);
       socket.broadcast.emit(("read-message"), {
         message: element,
       });

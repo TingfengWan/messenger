@@ -66,7 +66,6 @@ router.patch('/read', async (req, res) => {
         })
       })
     }
-    console.log(messages);
     res.json({ messages });
   } catch (error) {
     next(error);

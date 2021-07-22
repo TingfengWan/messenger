@@ -89,18 +89,16 @@ export const addNewConvoToStore = (state, recipientId, message) => {
 };
 export const setReadMessageToStore = (state, readMessage) => {
   return state.map((convo) => {
-    if (convo.conversationId === readMessage.conversationId) {
+    if (convo.id === readMessage.conversationId) {
+      console.log(convo);
       const convoCopy = { ...convo };
-      console.log(convoCopy);
-      return convoCopy.unreadMessages.map((unreadMessage) => {
-        if(unreadMessage.id === readMessage.id){
-          console.log("Updated Value:" + {...unreadMessage, recipientRead: true});
-          return {...unreadMessage, recipientRead: true};
-        } else {
-          console.log("Not Pog.");
-          return unreadMessage;
-        }
-      });
+      convoCopy.unreadMessages.splice(
+        convoCopy.unreadMessages.findIndex((message) => {
+          return message.id === readMessage.id;
+        }),
+        1,
+      );
+      return convoCopy;
     } else {
       return convo;
     }
