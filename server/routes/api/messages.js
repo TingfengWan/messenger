@@ -50,21 +50,26 @@ router.post("/", async (req, res, next) => {
   }
 });
 router.patch('/read', async (req, res) => {
-  const messages = req.body;
-
-  if ((Object.keys(messages).length > 0) && (messages.length > 0)) {
-    await messages.map(async message => {
-      const updatedMessage = {
-        id: message.id,
-        recipientRead: true,
-      }
-
-      await Message.update(updatedMessage, {
-        where: {
-          id: message.id
+  try {
+    const messages = req.body;
+    if ((Object.keys(messages).length > 0) && (messages.length > 0)) {
+      await messages.map(async message => {
+        const updatedMessage = {
+          id: message.id,
+          recipientRead: true,
         }
+
+        await Message.update(updatedMessage, {
+          where: {
+            id: message.id
+          }
+        })
       })
-    })
+    }
+    console.log(messages);
+    res.json({ messages });
+  } catch (error) {
+    next(error);
   }
 });
 module.exports = router;
