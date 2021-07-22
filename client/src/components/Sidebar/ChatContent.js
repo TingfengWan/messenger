@@ -13,11 +13,14 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: "bold",
     letterSpacing: -0.2,
   },
-  previewText: {
-    fontSize: 12,
-    color: "#9CADC8",
-    letterSpacing: -0.17,
-  },
+  previewText: props => (
+    {
+      fontSize: 12,
+      color: props.unread ? "" : "#9CADC8",
+      fontWeight: props.unread ? "" : "bold",
+      letterSpacing: -0.17,
+    }
+  ),
   notification: {
     height: 20,
     width: 20,
@@ -35,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ChatContent = (props) => {
-  const classes = useStyles();
+  const classes = useStyles(props);
 
   const { conversation } = props;
   const { latestMessageText, otherUser } = conversation;
