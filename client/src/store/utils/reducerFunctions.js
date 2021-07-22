@@ -8,15 +8,20 @@ export const addMessageToStore = (state, payload) => {
       messages: [message],
     };
     newConvo.latestMessageText = message.text;
+    if (message.senderId === newConvo.otherUser.id) {
+      newConvo.unreadMessages = [{ id: message.id }, ...newConvo.unreadMessages];
+    }
     return [newConvo, ...state];
   }
 
   return state.map((convo) => {
     if (convo.id === message.conversationId) {
       const convoCopy = { ...convo };
-      convoCopy.messages.push(message);
+      convoCopy.messages = [...convoCopy.messages, message];
       convoCopy.latestMessageText = message.text;
-
+      if (message.senderId === convoCopy.otherUser.id) {
+        convoCopy.unreadMessages = [...convoCopy.unreadMessages, {id: message.id}];
+      }
       return convoCopy;
     } else {
       return convo;
@@ -75,9 +80,29 @@ export const addNewConvoToStore = (state, recipientId, message) => {
       newConvo.id = message.conversationId;
       newConvo.messages.push(message);
       newConvo.latestMessageText = message.text;
+      newConvo.unreadMessages = [];
       return newConvo;
     } else {
       return convo;
     }
   });
 };
+export const setReadMessageToStore = (state, readMessage) => {
+  return state.map((convo) => {
+    if (convo.conversationId === readMessage.conversationId) {
+      const convoCopy = { ...convo };
+      console.log(convoCopy);
+      return convoCopy.unreadMessages.map((unreadMessage) => {
+        if(unreadMessage.id === readMessage.id){
+          console.log("Updated Value:" + {...unreadMessage, recipientRead: true});
+          return {...unreadMessage, recipientRead: true};
+        } else {
+          console.log("Not Pog.");
+          return unreadMessage;
+        }
+      });
+    } else {
+      return convo;
+    }
+  });
+}
