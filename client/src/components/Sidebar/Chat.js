@@ -5,6 +5,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import { setActiveChat } from "../../store/activeConversation";
 import { postReadMessages } from "../../store/utils/thunkCreators";
+import { theme } from "../../themes/theme";
 
 const styles = {
   root: {
@@ -21,8 +22,8 @@ const styles = {
   notification: {
     height: 20,
     width: 20,
-    backgroundColor: "#3F92FF",
-    marginRight: 10,
+    backgroundColor: theme.palette.primary.main,
+    marginRight: theme.spacing(1),
     color: "white",
     fontSize: 10,
     letterSpacing: -0.5,
@@ -60,7 +61,7 @@ const Chat = (props) => {
         online={otherUser.online}
         sidebar={true}
       />
-      <ChatContent conversation={conversation} />
+      <ChatContent conversation={conversation} unread={conversation.unread > 0} />
       {
         conversation.unread > 0 && 
         <Box className={classes.notification}>{conversation.unread}</Box>

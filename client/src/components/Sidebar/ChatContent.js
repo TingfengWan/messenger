@@ -17,24 +17,10 @@ const useStyles = makeStyles((theme) => ({
     {
       fontSize: 12,
       color: props.unread ? "" : "#9CADC8",
-      fontWeight: props.unread ? "" : "bold",
+      fontWeight: "bold",
       letterSpacing: -0.17,
     }
   ),
-  notification: {
-    height: 20,
-    width: 20,
-    backgroundColor: "#3F92FF",
-    marginRight: 10,
-    color: "white",
-    fontSize: 10,
-    letterSpacing: -0.5,
-    fontWeight: "bold",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 10,
-  },
 }));
 
 const ChatContent = (props) => {
