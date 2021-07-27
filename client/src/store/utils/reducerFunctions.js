@@ -9,7 +9,7 @@ export const addMessageToStore = (state, payload) => {
     };
     newConvo.latestMessageText = message.text;
     if (message.senderId === newConvo.otherUser.id) {
-      newConvo.unreadMessages = [{ id: message.id }, ...newConvo.unreadMessages];
+      ++newConvo.unread;
     }
     return [newConvo, ...state];
   }
@@ -20,7 +20,7 @@ export const addMessageToStore = (state, payload) => {
       convoCopy.messages = [...convoCopy.messages, message];
       convoCopy.latestMessageText = message.text;
       if (message.senderId === convoCopy.otherUser.id) {
-        convoCopy.unreadMessages = [...convoCopy.unreadMessages, {id: message.id}];
+        ++convoCopy.unread;
       }
       return convoCopy;
     } else {
@@ -28,7 +28,6 @@ export const addMessageToStore = (state, payload) => {
     }
   });
 };
-
 export const addOnlineUserToStore = (state, id) => {
   return state.map((convo) => {
     if (convo.otherUser.id === id) {
@@ -87,17 +86,21 @@ export const addNewConvoToStore = (state, recipientId, message) => {
     }
   });
 };
-export const setReadMessageToStore = (state, readMessage) => {
+export const setReadMessagesToStore = (state, readMessages, conversationId) => {
   return state.map((convo) => {
-    if (convo.id === readMessage.conversationId) {
-      console.log(convo);
+    if (convo.id === conversationId) {
       const convoCopy = { ...convo };
-      convoCopy.unreadMessages.splice(
-        convoCopy.unreadMessages.findIndex((message) => {
+      readMessages.forEach((readMessage) => {
+        const updateIndex = convoCopy.messages.findIndex((message) => {
           return message.id === readMessage.id;
-        }),
-        1,
-      );
+        });
+        convoCopy.messages[updateIndex].recipientRead = true;
+        if(convoCopy.messages[updateIndex].senderId === convoCopy.otherUser.id){
+          --convoCopy.unread;
+        } else {
+          convoCopy.lastReadMessage = {id: convoCopy.messages[updateIndex].id};
+        }
+      });
       return convoCopy;
     } else {
       return convo;
