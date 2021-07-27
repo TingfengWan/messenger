@@ -135,7 +135,7 @@ const sendReadMessages = (data, body) => {
 };
 export const postReadMessages = (body) => async(dispatch) => {
   try {
-    const data = await saveReadMessages({conversationId: body.conversationId, senderId: body.senderId});
+    const data = await saveReadMessages(body);
     dispatch(setReadMessages(data.messages, body.conversationId));
     sendReadMessages(data, body);
   } catch (error) {

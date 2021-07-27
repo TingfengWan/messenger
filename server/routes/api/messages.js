@@ -52,7 +52,12 @@ router.post("/", async (req, res, next) => {
 });
 router.patch('/read', async (req, res, next) => {
   try {
-    const {conversationId, senderId} = req.body;
+    const {senderId, recipientId, conversationId} = req.body;
+    //check if sender belongs in conversation
+    const { user1Id, user2Id } = await Conversation.findByPk(conversationId);
+    if (user1Id !== recipientId && user2Id !== recipientId) {
+      res.sendStatus(403);
+    }
     const messages = await Message.findAll({
       where:{
         [Op.and]: {

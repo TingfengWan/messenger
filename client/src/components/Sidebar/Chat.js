@@ -45,7 +45,8 @@ const Chat = (props) => {
     if(conversation.unread > 0){
       const body = {
         senderId: otherUser.id,
-        conversationId: conversation.id
+        recipientId: user.id,
+        conversationId: conversation.id,
       };
       await postReadMessages(body);
     }
