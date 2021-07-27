@@ -54,12 +54,11 @@ io.on("connection", (socket) => {
       sender: data.sender,
     });
   });
+
   socket.on("read-messages", data => {
-    const { messages } = data;
-    messages.forEach((element) => {
-      socket.broadcast.emit(("read-message"), {
-        message: element,
-      });
+    socket.broadcast.emit("read-messages", {
+      messages: data.messages,
+      conversationId: data.conversationId,
     });
   })
 });

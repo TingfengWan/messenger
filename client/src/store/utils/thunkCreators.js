@@ -5,7 +5,7 @@ import {
   addConversation,
   setNewMessage,
   setSearchedUsers,
-  setReadMessage,
+  setReadMessages,
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
 
@@ -128,22 +128,15 @@ const saveReadMessages =  async (body) => {
   }
 }
 const sendReadMessages = (data, body) => {
-  const {messages} = data
-  messages.forEach((message) => {
-    message.conversationId = body.conversationId;
-  });
   socket.emit("read-messages", {
     messages: data.messages,
-    sender: body.sender,
+    conversationId: body.conversationId,
   });
 };
 export const postReadMessages = (body) => async(dispatch) => {
   try {
-    const data = await saveReadMessages (body.readMessages);
-    data.messages.forEach((message) => {
-      message.conversationId = body.conversationId;
-      dispatch(setReadMessage(message));
-    });
+    const data = await saveReadMessages({conversationId: body.conversationId, senderId: body.senderId});
+    dispatch(setReadMessages(data.messages, body.conversationId));
     sendReadMessages(data, body);
   } catch (error) {
     console.log(error);
