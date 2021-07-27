@@ -37,15 +37,13 @@ const styles = {
 const Chat = (props) => {
 
   const { classes, conversation, user, setActiveChat, postReadMessages } = props;
-  const otherUser = props.conversation.otherUser;
+  const otherUser = conversation.otherUser;
 
   const handleClick = async (conversation) => {
     await setActiveChat(conversation.otherUser.username);
-    if(conversation.unreadMessages.length > 0){
+    if(conversation.unread > 0){
       const body = {
-        readMessages: conversation.unreadMessages,
-        sender: user,
-        recipientId: otherUser.id,
+        senderId: otherUser.id,
         conversationId: conversation.id
       };
       await postReadMessages(body);
@@ -62,10 +60,10 @@ const Chat = (props) => {
         online={otherUser.online}
         sidebar={true}
       />
-      <ChatContent unread={conversation.unreadMessages?.length || null} conversation={conversation} />
+      <ChatContent conversation={conversation} />
       {
-        conversation.unreadMessages.length > 0 && 
-        <Box className={classes.notification}>{conversation.unreadMessages.length}</Box>
+        conversation.unread > 0 && 
+        <Box className={classes.notification}>{conversation.unread}</Box>
       }
     </Box>
   );
