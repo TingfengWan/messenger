@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const { Conversation, Message } = require("../../db/models");
 const onlineUsers = require("../../onlineUsers");
+const { Op } = require("sequelize");
 
 // expects {recipientId, text, conversationId } in body (conversationId will be null if no conversation exists yet)
 router.post("/", async (req, res, next) => {
@@ -49,24 +50,29 @@ router.post("/", async (req, res, next) => {
     next(error);
   }
 });
-router.patch('/read', async (req, res) => {
+router.patch('/read', async (req, res, next) => {
   try {
-    const messages = req.body;
-    if ((Object.keys(messages).length > 0) && (messages.length > 0)) {
-      await messages.map(async message => {
-        const updatedMessage = {
-          id: message.id,
-          recipientRead: true,
-        }
-
-        await Message.update(updatedMessage, {
-          where: {
-            id: message.id
-          }
-        })
-      })
+    const {senderId, recipientId, conversationId} = req.body;
+    //check if sender belongs in conversation
+    const { user1Id, user2Id } = await Conversation.findByPk(conversationId);
+    if (user1Id !== recipientId && user2Id !== recipientId) {
+      res.sendStatus(403);
     }
-    res.json({ messages });
+    const result = await Message.update(
+      {
+        recipientRead: true,
+      },{
+        where:{
+          [Op.and]: {
+            conversationId: conversationId,
+            senderId: senderId,
+            recipientRead: false,
+          },
+        },
+        returning: true,
+      }
+    );
+    res.json({ messages: result[1] });
   } catch (error) {
     next(error);
   }

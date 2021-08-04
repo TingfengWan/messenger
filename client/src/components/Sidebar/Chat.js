@@ -5,6 +5,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
 import { setActiveChat } from "../../store/activeConversation";
 import { postReadMessages } from "../../store/utils/thunkCreators";
+import { theme } from "../../themes/theme";
 
 const styles = {
   root: {
@@ -21,8 +22,8 @@ const styles = {
   notification: {
     height: 20,
     width: 20,
-    backgroundColor: "#3F92FF",
-    marginRight: 10,
+    backgroundColor: theme.palette.primary.main,
+    marginRight: theme.spacing(1),
     color: "white",
     fontSize: 10,
     letterSpacing: -0.5,
@@ -37,16 +38,15 @@ const styles = {
 const Chat = (props) => {
 
   const { classes, conversation, user, setActiveChat, postReadMessages } = props;
-  const otherUser = props.conversation.otherUser;
+  const otherUser = conversation.otherUser;
 
   const handleClick = async (conversation) => {
     await setActiveChat(conversation.otherUser.username);
-    if(conversation.unreadMessages.length > 0){
+    if(conversation.unread > 0){
       const body = {
-        readMessages: conversation.unreadMessages,
-        sender: user,
-        recipientId: otherUser.id,
-        conversationId: conversation.id
+        senderId: otherUser.id,
+        recipientId: user.id,
+        conversationId: conversation.id,
       };
       await postReadMessages(body);
     }
@@ -62,10 +62,10 @@ const Chat = (props) => {
         online={otherUser.online}
         sidebar={true}
       />
-      <ChatContent unread={conversation.unreadMessages?.length || null} conversation={conversation} />
+      <ChatContent conversation={conversation} unread={conversation.unread > 0} />
       {
-        conversation.unreadMessages.length > 0 && 
-        <Box className={classes.notification}>{conversation.unreadMessages.length}</Box>
+        conversation.unread > 0 && 
+        <Box className={classes.notification}>{conversation.unread}</Box>
       }
     </Box>
   );
