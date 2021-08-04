@@ -91,14 +91,14 @@ export const setReadMessagesToStore = (state, readMessages, conversationId) => {
     if (convo.id === conversationId) {
       const convoCopy = { ...convo };
       readMessages.forEach((readMessage) => {
-        const updateIndex = convoCopy.messages.findIndex((message) => {
+        const message = convoCopy.messages.find((message) => {
           return message.id === readMessage.id;
         });
-        convoCopy.messages[updateIndex].recipientRead = true;
-        if(convoCopy.messages[updateIndex].senderId === convoCopy.otherUser.id){
+        message.recipientRead = true;
+        if(message.senderId === convoCopy.otherUser.id){
           --convoCopy.unread;
         } else {
-          convoCopy.lastReadMessage = {id: convoCopy.messages[updateIndex].id};
+          convoCopy.lastReadMessage = {id: message.id};
         }
       });
       return convoCopy;
