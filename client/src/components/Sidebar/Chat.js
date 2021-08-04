@@ -1,9 +1,11 @@
-import React, { Component } from "react";
+import React from "react";
 import { Box } from "@material-ui/core";
 import { BadgeAvatar, ChatContent } from "../Sidebar";
 import { withStyles } from "@material-ui/core/styles";
-import { setActiveChat } from "../../store/activeConversation";
 import { connect } from "react-redux";
+import { setActiveChat } from "../../store/activeConversation";
+import { postReadMessages } from "../../store/utils/thunkCreators";
+import { theme } from "../../themes/theme";
 
 const styles = {
   root: {
@@ -17,37 +19,65 @@ const styles = {
       cursor: "grab",
     },
   },
+  notification: {
+    height: 20,
+    width: 20,
+    backgroundColor: theme.palette.primary.main,
+    marginRight: theme.spacing(1),
+    color: "white",
+    fontSize: 10,
+    letterSpacing: -0.5,
+    fontWeight: "bold",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+  },
 };
 
-class Chat extends Component {
-  handleClick = async (conversation) => {
-    await this.props.setActiveChat(conversation.otherUser.username);
-  };
+const Chat = (props) => {
 
-  render() {
-    const { classes } = this.props;
-    const otherUser = this.props.conversation.otherUser;
-    return (
-      <Box
-        onClick={() => this.handleClick(this.props.conversation)}
-        className={classes.root}
-      >
-        <BadgeAvatar
-          photoUrl={otherUser.photoUrl}
-          username={otherUser.username}
-          online={otherUser.online}
-          sidebar={true}
-        />
-        <ChatContent conversation={this.props.conversation} />
-      </Box>
-    );
-  }
-}
+  const { classes, conversation, user, setActiveChat, postReadMessages } = props;
+  const otherUser = conversation.otherUser;
+
+  const handleClick = async (conversation) => {
+    await setActiveChat(conversation.otherUser.username);
+    if(conversation.unread > 0){
+      const body = {
+        senderId: otherUser.id,
+        recipientId: user.id,
+        conversationId: conversation.id,
+      };
+      await postReadMessages(body);
+    }
+  };
+  return (
+    <Box
+      onClick={() => handleClick(conversation)}
+      className={classes.root}
+    >
+      <BadgeAvatar
+        photoUrl={otherUser.photoUrl}
+        username={otherUser.username}
+        online={otherUser.online}
+        sidebar={true}
+      />
+      <ChatContent conversation={conversation} unread={conversation.unread > 0} />
+      {
+        conversation.unread > 0 && 
+        <Box className={classes.notification}>{conversation.unread}</Box>
+      }
+    </Box>
+  );
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
     setActiveChat: (id) => {
       dispatch(setActiveChat(id));
+    },
+    postReadMessages: (message) => {
+      dispatch(postReadMessages(message));
     },
   };
 };
