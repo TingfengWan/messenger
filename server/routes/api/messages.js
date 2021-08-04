@@ -58,30 +58,21 @@ router.patch('/read', async (req, res, next) => {
     if (user1Id !== recipientId && user2Id !== recipientId) {
       res.sendStatus(403);
     }
-    const messages = await Message.findAll({
-      where:{
-        [Op.and]: {
-          conversationId: conversationId,
-          senderId: senderId,
-          recipientRead: false,
+    const result = await Message.update(
+      {
+        recipientRead: true,
+      },{
+        where:{
+          [Op.and]: {
+            conversationId: conversationId,
+            senderId: senderId,
+            recipientRead: false,
+          },
         },
-      },
-      attributes: ["id"],
-    });
-    if ((Object.keys(messages).length > 0) && (messages.length > 0)) {
-      await messages.map(async message => {
-        const updatedMessage = {
-          id: message.id,
-          recipientRead: true,
-        }
-        await Message.update(updatedMessage, {
-          where: {
-            id: message.id
-          }
-        })
-      })
-    }
-    res.json({ messages });
+        returning: true,
+      }
+    );
+    res.json({ messages: result[1] });
   } catch (error) {
     next(error);
   }
