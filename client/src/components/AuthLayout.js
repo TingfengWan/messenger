@@ -62,21 +62,22 @@ export const rightStyles = makeStyles((theme) => ({
   header: {
     width: "100%",
     display: "flex",
-    margin: "4rem",
-    marginRight: "12rem",
+    marginTop: "3rem",
+    marginRight: "6rem",
+    marginBottom: "4rem",
     alignItems: "center",
     justifyContent: "flex-end",
     color: theme.palette.grey[400]
   },
   registerButtonRoute: {
-    marginLeft: "4rem",
+    marginLeft: "2rem",
     width: "12rem",
     height: "4rem",
     boxShadow: "0 2px 5px rgba(80,80,80,0.1)",
     color: theme.palette.primary.main,
   },
   loginButtonRoute: {
-    marginLeft: "4rem",
+    marginLeft: "2rem",
     width: "10rem",
     height: "4rem",
     boxShadow: "0 2px 5px rgba(80,80,80,0.1)",
