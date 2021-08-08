@@ -2,25 +2,27 @@ import React from "react";
 import { Redirect, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import {
-  Grid,
   Box,
   Typography,
   Button,
   FormControl,
   TextField,
+  Link,
 } from "@material-ui/core";
 import { login } from "./store/utils/thunkCreators";
+import { AuthLayout, rightStyles as useStyles } from "./components/AuthLayout";
 
 const Login = (props) => {
   const history = useHistory();
   const { user, login } = props;
+  const classes = useStyles(props);
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    const username = event.target.username.value;
+    const email = event.target.email.value;
     const password = event.target.password.value;
 
-    await login({ username, password });
+    await login({ email, password });
   };
 
   if (user.id) {
@@ -28,41 +30,50 @@ const Login = (props) => {
   }
 
   return (
-    <Grid container justifyContent="center">
-      <Box>
-        <Grid container item>
-          <Typography>Need to register?</Typography>
-          <Button onClick={() => history.push("/register")}>Register</Button>
-        </Grid>
-        <form onSubmit={handleLogin}>
-          <Grid>
-            <Grid>
-              <FormControl margin="normal" required>
-                <TextField
-                  aria-label="username"
-                  label="Username"
-                  name="username"
-                  type="text"
-                />
-              </FormControl>
-            </Grid>
+    <AuthLayout>
+        <Box component="div" className={classes.header}>
+          <Typography>Don't have an account?</Typography>
+          <Button color="inherit" className={classes.registerButtonRoute} onClick={() => history.push("/register")}>Create account</Button>
+        </Box>
+        <Box component="form" className={classes.form} onSubmit={handleLogin}>
+          <Box component="div" className={classes.titleFormContainer}>
+            <Typography className={classes.titleForm}>Welcome back!</Typography>
+          </Box>
+          <Box component="div" className={classes.inputContainer}>
             <FormControl margin="normal" required>
               <TextField
-                label="password"
-                aria-label="password"
-                type="password"
-                name="password"
+                className={classes.input}
+                color="primary"
+                aria-label="email"
+                label="E-mail address"
+                name="email"
+                type="text"
+                InputLabelProps={{style: {fontSize: "1.25rem"}}}
               />
             </FormControl>
-            <Grid>
-              <Button type="submit" variant="contained" size="large">
-                Login
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-      </Box>
-    </Grid>
+            <FormControl margin="normal" required>
+              <TextField
+                className={classes.input}
+                color="primary"
+                label="Password"
+                aria-label="password"
+                fullWidth
+                type="password"
+                name="password"
+                InputLabelProps={{style: {fontSize: "1.25rem"}}}
+                InputProps={{
+                  endAdornment: <Link>Forgot?</Link>,
+                }}
+              />
+            </FormControl>
+          </Box>
+          <Box component="div" className={classes.buttonContainer}>
+            <Button color="primary" className={classes.buttonSubmit} type="submit" variant="contained" size="large">
+                  Login
+            </Button>
+          </Box>
+        </Box>
+    </AuthLayout>
   );
 };
 
